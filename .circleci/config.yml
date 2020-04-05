@@ -4,11 +4,21 @@ jobs:
   build:
     docker:
       - image: archlinux:latest
+    resource_class: small
     steps:
       - run: w
       - run: uname -a
       - run: env
       - run: pacman -Q
-      - run: curl -o stats https://makotom.net/env.php
+      - run:
+          name: Setting up WHOIS
+          command: |
+            echo 'Server =  https://jpn.mirror.pkgbuild.com/$repo/os/$arch' > /etc/pacman.d/mirrorlist
+            pacman -Sy --noconfirm whois
+      - run:
+          name: Looking up public IP address with WHOIS
+          command: |
+            PUBLIC_IP_ADDR=$(curl -sL https://makotom.net/env.php | tee stats | head -n 2 | tail -n 1)
+            whois $PUBLIC_IP_ADDR
       - store_artifacts:
           path: stats
