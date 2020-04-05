@@ -1,0 +1,14 @@
+version: 2
+
+jobs:
+  build:
+    docker:
+      - image: archlinux:latest
+    steps:
+      - run: w
+      - run: uname -a
+      - run: env
+      - run: pacman -Q
+      - run: curl -o stats https://makotom.net/env.php
+      - store_artifacts:
+          path: stats
